@@ -36,6 +36,21 @@ module ALU_1_bit_set_overflow(a,b,binvert,Cin,less,x,y,z,set,result);
     
 endmodule
 
+module ALU_4_bit(a,b,binvert,Cin,x,y,z,result);
+    input [3:0] a,[3:0] b,binvert,Cin,x,y,z;
+    output [3:0] result;
+    
+    wire set, [2:0] Cout;
+    
+    ALU_1_bit      (a,b,binvert,Cin,less,x,y,z,Cout,result)
+    ALU_1_bit ALU0(a[0],b[0],binvert,binvert,set,x,y,z,Cout[0],result[0]);
+    ALU_1_bit ALU1(a[1],b[1],binvert,Cout[0],1'b0,x,y,z,Cout[1],result[1]);
+    ALU_1_bit ALU2(a[2],b[2],binvert,Cout[1],1'b0,x,y,z,Cout[2],result[2]);
+
+    ALU_1_bit_set_overflow ALU3(a[3],b[3],binvert,Cout[2],1'b0,x,y,z,set,result[3]);
+    
+endmodule
+
 module half_adder(x,y,S,C);
     input x,y;
     output S,C;
