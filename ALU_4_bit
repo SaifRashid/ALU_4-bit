@@ -1,0 +1,135 @@
+module ALU_1_bit(a,b,binvert,Cin,less,x,y,z,Cout,result);
+    input a,b,binvert,Cin,less,x,y,z;
+    output Cout,result;
+    
+    wire b1,o0,o1,o2;
+    
+    and g0(o0,a,b);
+    
+    or g1(o1,a,b);
+    
+    xor g2(b1,b,binvert);
+
+    full_adder FA(a,b1,Cin,o2,Cout);
+    
+    mux_8x1 OPMUX(o0,o1,o2,less,1'b0,1'b0,1'b0,1'b0,x,y,z,result);
+    
+endmodule
+
+module ALU_1_bit_set_overflow(a,b,binvert,Cin,less,x,y,z,set,result);
+    input a,b,binvert,Cin,less,x,y,z;
+    output set,result;
+    
+    wire b1,o0,o1,o2;
+    
+    and g0(o0,a,b);
+    
+    or g1(o1,a,b);
+    
+    xor g2(b1,b,binvert);
+
+    full_adder FA(a,b1,Cin,o2,Cout);
+    
+    mux_8x1 OPMUX(o0,o1,o2,less,1'b0,1'b0,1'b0,1'b0,x,y,z,result);
+    
+    and g3(set, o2);
+    
+endmodule
+
+module half_adder(x,y,S,C);
+    input x,y;
+    output S,C;
+         
+    xor g1(S,x,y);
+    
+    and g2(C,x,y);
+endmodule
+
+module full_adder(x,y,z,S,C);
+    input x,y,z;
+    output S,C;
+    wire S1,C1,C2;
+    
+    half_adder HA1(x,y,S1,C1);
+    half_adder HA2(S1,z,S,C2);
+    
+    or g1(C,C1,C2);
+endmodule
+
+module mux_2x1(x,y,z,out);
+    input x,y,z;
+    output out;
+    
+    wire a,b;
+    
+    not notz(notz, z);
+    
+    and g1(a,x,notz),
+        g2(b,y,z);
+    
+    or  g3(out,a,b);
+endmodule
+
+module mux_4x1(I0,I1,I2,I3,S1,S0,out);
+    input I0,I1,I2,I3,S1,S0;
+    output out;
+    
+    wire o1, o2;
+    
+    mux_2x1 MUX1(I0,I1,S0,o1);
+    mux_2x1 MUX2(I2,I3,S0,o2);
+    mux_2x1 MUX3(o1,o2,S1,out);
+endmodule
+
+module mux_8x1(I0,I1,I2,I3,I4,I5,I6,I7,S2,S1,S0,out);
+    input I0,I1,I2,I3,I4,I5,I6,I7,S2,S1,S0;
+    output out;
+    
+    wire o1,o2;
+    
+    mux_4x1 M1(I0,I1,I2,I3,S1,S0,o1);
+    mux_4x1 M2(I4,I5,I6,I7,S1,S0,o2);
+    mux_2x1 M3(o1,o2,S2,out);
+
+endmodule
+
+module test;
+    reg a,b,binvert,Cin,less,x,y,z;
+    wire signed Cout,result;
+    
+    ALU_1_bit ALU(a,b,binvert,Cin,less,x,y,z,Cout,result);
+    
+    initial begin
+        $monitor("%b %b    %b     %b    %b  %b %b %b   %b    %b", a,b,binvert,Cin,less,x,y,z,Cout,result);
+        $display("a b binvert Cin less x y z Cout result");
+        a=0; b=0; binvert=0; Cin=0; less=0; x=0; y=0; z=0;
+        #1 a=0; b=0; binvert=0; Cin=0; less=0; x=0; y=0; z=1;
+        #1 a=0; b=0; binvert=0; Cin=0; less=0; x=0; y=1; z=0;
+        #1 a=0; b=0; binvert=0; Cin=0; less=0; x=0; y=1; z=1;
+        #1 a=0; b=0; binvert=0; Cin=0; less=0; x=1; y=0; z=0;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=0; y=0; z=0;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=0; y=0; z=1;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=0; y=1; z=0;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=0; y=1; z=1;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=1; y=0; z=0;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=1; y=0; z=1;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=1; y=1; z=0;
+        #1 a=0; b=1; binvert=0; Cin=0; less=0; x=1; y=1; z=1;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=0; y=0; z=0;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=0; y=0; z=1;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=0; y=1; z=0;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=0; y=1; z=1;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=1; y=0; z=0;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=1; y=0; z=1;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=1; y=1; z=0;
+        #1 a=1; b=0; binvert=0; Cin=0; less=0; x=1; y=1; z=1;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=0; y=0; z=0;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=0; y=0; z=1;
+        #1 a=1; b=1; binvert=1; Cin=1; less=0; x=0; y=1; z=0;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=0; y=1; z=1;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=1; y=0; z=0;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=1; y=0; z=1;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=1; y=1; z=0;
+        #1 a=1; b=1; binvert=0; Cin=0; less=0; x=1; y=1; z=1;
+    end
+endmodule
