@@ -1,5 +1,5 @@
-module ALU_1_bit(a,b,Cin,less,Ainvert,Binvert,y,z,Cout,result);
-    input a,b,Cin,less,Ainvert,Binvert,y,z;
+module ALU_1_bit(a,b,Cin,less,Ainvert,Binvert,x,y,Cout,result);
+    input a,b,Cin,less,Ainvert,Binvert,x,y;
     output Cout,result;
     
     wire a1,b1,o0,o1,o2;
@@ -13,32 +13,32 @@ module ALU_1_bit(a,b,Cin,less,Ainvert,Binvert,y,z,Cout,result);
 
     full_adder FA(a1,b1,Cin,o2,Cout);
     
-    mux_4x1 OPMUX(o0,o1,o2,less,y,z,result);
+    mux_4x1 OPMUX(o0,o1,o2,less,x,y,result);
     
 endmodule
 
-module ALU_1_bit_set_overflow(a,b,Cin,less,Ainvert,Binvert,y,z,set,overflow,result);
-    input a,b,Cin,less,Ainvert,Binvert,y,z;
+module ALU_1_bit_set_overflow(a,b,Cin,less,Ainvert,Binvert,x,y,set,overflow,result);
+    input a,b,Cin,less,Ainvert,Binvert,x,y;
     output set,overflow,result;
     
-    wire b1,o0,o1,o2,v;
+    wire a1,b1,o0,o1,o2,v;
     
-    and g0(o0,a,b);
+    and g0(o0,a1,b1);
     
-    or g1(o1,a,b);
+    or g1(o1,a1,b1);
     
     xor g2(b1,b,Binvert),
         g3(a1,a,Ainvert);
 
-    full_adder FA(a,b1,Cin,o2,Cout);
+    full_adder FA(a1,b1,Cin,o2,Cout);
     
-    mux_4x1 OPMUX(o0,o1,o2,less,y,z,result);
+    mux_4x1 OPMUX(o0,o1,o2,less,x,y,result);
     
     and g4(set, o2);
     
     xor g5(v,Cin,Cout);
     
-    and g6(overflow,v,y);
+    and g6(overflow,v,x);
     
 endmodule
 
@@ -86,6 +86,10 @@ module testALU;
 	    #1 op = 3'b111; a = 4'b0101; b = 4'b0001;  // SLT
 	    #1 op = 3'b111; a = 4'b0001; b = 4'b0011;  // SLT
 	    #1 op = 3'b111; a = 4'b1101; b = 4'b0110;  // SLT overflow (-3-6=7 => SLT=0)
+	    
+	    #1 op = 4'b1101; a = 4'b1101; b = 4'b0110;
+	    #1 op = 4'b1100; a = 4'b0001; b = 4'b0011;
+	    
     end
 endmodule
 
