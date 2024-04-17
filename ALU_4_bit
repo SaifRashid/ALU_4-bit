@@ -87,9 +87,11 @@ module testALU;
 	    #1 op = 3'b111; a = 4'b0001; b = 4'b0011;  // SLT
 	    #1 op = 3'b111; a = 4'b1101; b = 4'b0110;  // SLT overflow (-3-6=7 => SLT=0)
 	    
-	    #1 op = 4'b1101; a = 4'b1101; b = 4'b0110;
-	    #1 op = 4'b1100; a = 4'b0001; b = 4'b0011;
+	    #1 op = 4'b1100; a = 4'b1101; b = 4'b0110; // NOR
+	    #1 op = 4'b1100; a = 4'b0000; b = 4'b0000; // NOR
 	    
+	    #1 op = 4'b1101; a = 4'b0001; b = 4'b0011; // NAND
+	    #1 op = 4'b1101; a = 4'b1111; b = 4'b1111; // NAND
     end
 endmodule
 
